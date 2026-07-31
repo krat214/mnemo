@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.krat214/mnemo",
+  "description": "Cooperative persistent memory for LLMs: episodes, memories and traits over SQLite (FTS5, Hebbian)",
+  "repository": {
+    "url": "https://github.com/krat214/mnemo",
+    "source": "github"
+  },
+  "version": "0.3.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@krat214/mnemo",
+      "version": "0.3.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MNEMO_DB",
+          "description": "Absolute path to the SQLite database (default: ~/.mnemo/mem.db)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
