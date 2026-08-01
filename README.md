@@ -30,11 +30,56 @@ memorias    (lo aprendido, con relevancia que decae si no se usa)
 rasgos      (reglas o hechos permanentes — identidad, preferencias fijas)
 ```
 
-Guardado en SQLite local, con búsqueda de texto completo y semántica opcional. Expuesto vía MCP con un set reducido de herramientas (capturar, recordar, consolidar, cristalizar, olvidar) y una interfaz web de administración real (no solo lectura) para gestionar todo eso a mano.
+Guardado en SQLite local, con búsqueda de texto completo (FTS5). Expuesto vía MCP con 5 herramientas (`capture`, `recall`, `consolidate`, `crystallize`, `forget`) y una interfaz web de administración real (no solo lectura) para gestionar todo eso a mano.
+
+## Instalación rápida
+
+Modo MCP (stdio), para conectar desde Claude Desktop/Code u otro cliente MCP:
+
+```json
+{
+  "mcpServers": {
+    "mnemo": {
+      "command": "npx",
+      "args": ["-y", "@krat214/mnemo"]
+    }
+  }
+}
+```
+
+La base de datos se crea sola en `~/.mnemo/mem.db` (configurable con `MNEMO_DB`).
+
+## Modo servidor + interfaz web
+
+Para usar la interfaz visual (ver/editar tu memoria en el navegador):
+
+```bash
+git clone https://github.com/krat214/mnemo.git
+cd mnemo
+npm install && npm run build
+MNEMO_AUTH_USER=tu_usuario MNEMO_AUTH_PASS=tu_password npm run start:http
+```
+
+Abre `http://localhost:3200`.
+
+**Seguridad:** a diferencia de otros servidores de memoria similares, Mnemo **se rehúsa a arrancar en modo HTTP sin usuario y contraseña** — nunca queda abierto por accidente. Si de verdad quieres correrlo sin auth (solo localhost, solo para probar), tienes que decirlo explícitamente con `MNEMO_ALLOW_NO_AUTH=true`.
+
+## Las 5 herramientas MCP
+
+| Herramienta | Qué hace |
+|---|---|
+| `capture` | Guarda un episodio (texto crudo, con fecha) en un scope |
+| `recall` | Busca en memorias por texto completo, refuerza lo que se recuerda |
+| `consolidate` | Resume los episodios pendientes de un scope en una memoria |
+| `crystallize` | Fija un rasgo permanente (identidad, regla, preferencia fija) |
+| `forget` | Borra una memoria por id, o todas las que caigan bajo un umbral de relevancia |
 
 ## Estado
 
-🚧 En desarrollo activo — el motor se está reconstruyendo desde cero. Sin release todavía.
+✅ Motor funcionando: captura, consolidación, búsqueda, cristalización y olvido — todo probado con tests reales (20/20 pasando) y en vivo.
+✅ Servidor HTTP + API REST + interfaz web (React) funcionando end-to-end.
+✅ Auth obligatoria por defecto en modo HTTP.
+🚧 Pendiente: búsqueda semántica, más proveedores de embeddings, empaquetado para publicar en npm.
 
 ## Licencia
 

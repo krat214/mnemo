@@ -1,0 +1,59 @@
+{
+  "name": "@krat214/mnemo",
+  "version": "0.1.0",
+  "description": "Persistent memory MCP server for AI agents, with a real UI to see and edit your memory.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Angel Renteria",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krat214/mnemo.git"
+  },
+  "homepage": "https://github.com/krat214/mnemo#readme",
+  "bugs": {
+    "url": "https://github.com/krat214/mnemo/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "memory",
+    "llm",
+    "agent-memory",
+    "sqlite"
+  ],
+  "bin": {
+    "mnemo": "./dist/server.js",
+    "mnemo-http": "./dist/server-http.js"
+  },
+  "files": [
+    "dist",
+    "ui/dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && npm run build:ui",
+    "build:ui": "cd ui && npm install && npm run build",
+    "dev": "tsx src/server.ts",
+    "dev:http": "tsx src/server-http.ts",
+    "start": "node dist/server.js",
+    "start:http": "node dist/server-http.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "better-sqlite3": "^12.11.1",
+    "express": "^4.21.2",
+    "ulid": "^2.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.9"
+  }
+}

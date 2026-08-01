@@ -1,0 +1,209 @@
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  text-align: left;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+header .logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+header .tagline {
+  color: var(--text-muted, #888);
+  font-size: 14px;
+}
+
+.error {
+  background: #3a1a1a;
+  color: #ffb4b4;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.toolbar input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #333);
+  background: transparent;
+  color: inherit;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border, #333);
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs button.active {
+  opacity: 1;
+  border-bottom-color: var(--accent, #6ea8fe);
+}
+
+.card {
+  border: 1px solid var(--border, #333);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.card .gist {
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.card .details {
+  white-space: pre-wrap;
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 0 0 8px;
+}
+
+.card .meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.card .meta button {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.card.memory input,
+.card.memory textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #333);
+  background: transparent;
+  color: inherit;
+}
+
+.salience-bar {
+  height: 3px;
+  background: var(--border, #333);
+  border-radius: 2px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.salience-fill {
+  height: 100%;
+  background: var(--accent, #6ea8fe);
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--border, #333);
+}
+
+.badge.pending {
+  background: #4a3a1a;
+  color: #ffd48a;
+}
+
+.trait-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.evidence {
+  font-size: 12px;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.capture-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.capture-form input,
+.capture-form textarea {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #333);
+  background: transparent;
+  color: inherit;
+}
+
+.capture-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.capture-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border, #333);
+  background: var(--accent, #6ea8fe);
+  color: #0a0a0a;
+  font-weight: 500;
+}
+
+button.secondary {
+  background: transparent;
+  color: inherit;
+}
+
+button.danger {
+  background: #c0392b;
+  color: white;
+}
+
+.empty {
+  opacity: 0.6;
+  font-size: 14px;
+}
