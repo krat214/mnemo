@@ -77,8 +77,11 @@ Abre `http://localhost:3200`.
 ## Estado
 
 ✅ Motor funcionando: captura, consolidación, búsqueda, cristalización y olvido — todo probado con tests reales (20/20 pasando) y en vivo.
+
 ✅ Servidor HTTP + API REST + interfaz web (React) funcionando end-to-end.
+
 ✅ Auth obligatoria por defecto en modo HTTP.
+
 🚧 Pendiente: búsqueda semántica, más proveedores de embeddings, empaquetado para publicar en npm.
 
 ## Licencia
