@@ -35,11 +35,14 @@ export function capture(db: Database.Database, params: { scope: string; content:
 
 export interface RecallResult {
   memories: Array<Memory & { rank: number }>;
+  /** Raw episodes not yet consolidated that match the query (fresh captures). */
+  episodes: Array<Episode & { rank: number }>;
   traits: Trait[];
 }
 
 export function recall(db: Database.Database, params: { scope?: string; query: string; limit?: number }): RecallResult {
-  const { scope, query, limit = 10 } = params;
+  const { scope, query } = params;
+  const limit = Math.min(Math.max(Math.trunc(Number(params.limit ?? 10)) || 10, 1), 100);
   if (!query.trim()) throw new Error("query is required");
 
   const ftsQuery = query
@@ -47,6 +50,17 @@ export function recall(db: Database.Database, params: { scope?: string; query: s
     .filter(Boolean)
     .map((term) => `"${term.replace(/"/g, '""')}"*`)
     .join(" OR ");
+
+  const episodeScopeFilter = scope ? "AND e.scope = @scope" : "";
+  const episodes = db
+    .prepare<{ ftsQuery: string; scope?: string; limit: number }, Episode & { rank: number }>(
+      `SELECT e.*, bm25(episodes_fts) AS rank
+       FROM episodes_fts
+       JOIN episodes e ON e.rowid = episodes_fts.rowid
+       WHERE episodes_fts MATCH @ftsQuery AND e.consolidated_into IS NULL ${episodeScopeFilter}
+       ORDER BY rank LIMIT @limit`
+    )
+    .all({ ftsQuery, scope, limit });
 
   const scopeFilter = scope ? "AND m.scope = @scope" : "";
   const rows = db
@@ -77,7 +91,7 @@ export function recall(db: Database.Database, params: { scope?: string; query: s
   const traitParams = scope ? [scope] : [];
   const traits = db.prepare<unknown[], Trait>(`SELECT * FROM traits ${traitFilter} ORDER BY updated_at DESC`).all(...traitParams);
 
-  return { memories: touched, traits };
+  return { memories: touched, episodes, traits };
 }
 
 export function consolidate(

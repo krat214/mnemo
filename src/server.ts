@@ -18,7 +18,7 @@ const tools = {
   },
   recall: {
     description: "Search memories (and list traits) by full-text query, optionally scoped.",
-    inputSchema: z.object({ scope: ScopeSchema.optional(), query: z.string().min(1), limit: z.number().int().positive().max(100).optional() }),
+    inputSchema: z.object({ scope: ScopeSchema.optional(), query: z.string().min(1), limit: z.coerce.number().int().positive().max(100).optional() }),
     handler: (args: { scope?: string; query: string; limit?: number }) => recall(db, args)
   },
   consolidate: {
@@ -33,7 +33,7 @@ const tools = {
   },
   forget: {
     description: "Delete a memory by id, or all memories in a scope below a salience threshold.",
-    inputSchema: z.object({ id: z.string().optional(), scope: ScopeSchema.optional(), belowSalience: z.number().min(0).max(1).optional() }),
+    inputSchema: z.object({ id: z.string().optional(), scope: ScopeSchema.optional(), belowSalience: z.coerce.number().min(0).max(1).optional() }),
     handler: (args: { id?: string; scope?: string; belowSalience?: number }) => forget(db, args)
   }
 } as const;
@@ -62,10 +62,21 @@ function zodToJsonSchemaLoose(schema: z.ZodTypeAny): Record<string, unknown> {
   const properties: Record<string, unknown> = {};
   const required: string[] = [];
   for (const [key, value] of Object.entries(shape)) {
-    properties[key] = { type: "string" };
+    properties[key] = { type: jsonTypeOf(value) };
     if (!value.isOptional()) required.push(key);
   }
   return { type: "object", properties, required };
+}
+
+/** Advertise the real type so MCP clients send numbers as numbers (previously everything was "string"). */
+function jsonTypeOf(schema: z.ZodTypeAny): "string" | "number" | "boolean" {
+  let inner: z.ZodTypeAny = schema;
+  while (inner instanceof z.ZodOptional || inner instanceof z.ZodNullable || inner instanceof z.ZodDefault) {
+    inner = inner._def.innerType;
+  }
+  if (inner instanceof z.ZodNumber) return "number";
+  if (inner instanceof z.ZodBoolean) return "boolean";
+  return "string";
 }
 
 const transport = new StdioServerTransport();
