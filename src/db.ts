@@ -70,4 +70,26 @@ function migrate(db: Database.Database): void {
       INSERT INTO memories_fts(rowid, gist, details) VALUES (new.rowid, new.gist, new.details);
     END;
   `);
+
+  // Full-text index over raw episodes, so freshly captured text is recallable before consolidation.
+  const hadEpisodesFts = db
+    .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'episodes_fts'")
+    .get();
+  db.exec(`
+    CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5(
+      content, content='episodes', content_rowid='rowid'
+    );
+    CREATE TRIGGER IF NOT EXISTS episodes_ai AFTER INSERT ON episodes BEGIN
+      INSERT INTO episodes_fts(rowid, content) VALUES (new.rowid, new.content);
+    END;
+    CREATE TRIGGER IF NOT EXISTS episodes_ad AFTER DELETE ON episodes BEGIN
+      INSERT INTO episodes_fts(episodes_fts, rowid, content) VALUES ('delete', old.rowid, old.content);
+    END;
+    CREATE TRIGGER IF NOT EXISTS episodes_au AFTER UPDATE OF content ON episodes BEGIN
+      INSERT INTO episodes_fts(episodes_fts, rowid, content) VALUES ('delete', old.rowid, old.content);
+      INSERT INTO episodes_fts(rowid, content) VALUES (new.rowid, new.content);
+    END;
+  `);
+  // Existing databases: index the episodes captured before this table existed.
+  if (!hadEpisodesFts) db.exec("INSERT INTO episodes_fts(episodes_fts) VALUES ('rebuild')");
 }

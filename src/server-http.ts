@@ -31,7 +31,8 @@ app.get("/api/recall", (req, res) => {
   try {
     const scope = typeof req.query.scope === "string" ? req.query.scope : undefined;
     const query = typeof req.query.q === "string" ? req.query.q : "";
-    res.json(recall(db, { scope, query }));
+    const limit = typeof req.query.limit === "string" ? Number(req.query.limit) : undefined;
+    res.json(recall(db, { scope, query, limit }));
   } catch (err) {
     res.status(400).json({ error: (err as Error).message });
   }

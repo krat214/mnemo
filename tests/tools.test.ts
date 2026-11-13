@@ -57,6 +57,42 @@ describe("consolidate + recall", () => {
     expect(result.memories.length).toBeGreaterThan(0);
   });
 
+  it("finds freshly captured episodes before consolidation", () => {
+    capture(db, { scope: "finanzas", content: "La tarjeta Nu vence el día 20" });
+    const result = recall(db, { scope: "finanzas", query: "tarjeta" });
+    expect(result.episodes).toHaveLength(1);
+    expect(result.episodes[0].content).toContain("Nu");
+  });
+
+  it("stops returning episodes once they are consolidated (the memory takes over)", () => {
+    capture(db, { scope: "test", content: "Angel prefers dark mode" });
+    consolidate(db, { scope: "test" });
+    const result = recall(db, { scope: "test", query: "dark" });
+    expect(result.episodes).toHaveLength(0);
+    expect(result.memories.length).toBeGreaterThan(0);
+  });
+
+  it("respects scope when searching episodes", () => {
+    capture(db, { scope: "a", content: "secreto del scope a" });
+    expect(recall(db, { scope: "b", query: "secreto" }).episodes).toHaveLength(0);
+    expect(recall(db, { query: "secreto" }).episodes).toHaveLength(1);
+  });
+
+  it("accepts limit as a numeric string and clamps it", () => {
+    for (let i = 0; i < 5; i++) capture(db, { scope: "test", content: `nota número ${i}` });
+    expect(recall(db, { scope: "test", query: "nota", limit: "2" as unknown as number }).episodes).toHaveLength(2);
+    expect(recall(db, { scope: "test", query: "nota", limit: 0 }).episodes).toHaveLength(5);
+  });
+
+  it("indexes episodes that existed before the episodes_fts migration", () => {
+    capture(db, { scope: "legacy", content: "dato viejo de septiembre" });
+    db.exec("DROP TRIGGER episodes_ai; DROP TRIGGER episodes_ad; DROP TRIGGER episodes_au; DROP TABLE episodes_fts;");
+    const path = db.name;
+    db.close();
+    db = openDb(path);
+    expect(recall(db, { scope: "legacy", query: "septiembre" }).episodes).toHaveLength(1);
+  });
+
   it("returns null when there are no un-consolidated episodes", () => {
     const memory = consolidate(db, { scope: "empty-scope" });
     expect(memory).toBeNull();
@@ -74,6 +110,8 @@ describe("consolidate + recall", () => {
   it("reinforces salience on recall", () => {
     capture(db, { scope: "test", content: "reinforce me" });
     consolidate(db, { scope: "test" });
+    // Start well below the 1.0 ceiling: near 1.0 a few ms of decay can outweigh the asymptotic boost.
+    db.prepare("UPDATE memories SET salience = 0.5").run();
     const before = recall(db, { scope: "test", query: "reinforce" });
     const salienceBefore = before.memories[0].salience;
     const after = recall(db, { scope: "test", query: "reinforce" });
